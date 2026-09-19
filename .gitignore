@@ -1,0 +1,30 @@
+### Maven
+target/
+*.jar
+*.war
+*.class
+
+### IDE
+.idea/
+*.iml
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+### Environment — NEVER commit secrets
+.env
+*.env.local
+
+### OS
+.DS_Store
+Thumbs.db
+
+### Logs
+*.log
+logs/
+
+### Spring Boot
+spring-boot-*.jar
