@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users, Projects & Tasks REST API</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 30, 46, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary-accent: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.15) 0%, transparent 45%);
+        }
+
+        .container {
+            max-width: 850px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.9rem;
+            border-radius: 9999px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #818cf8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            box-shadow: 0 0 10px var(--success-color);
+        }
+
+        .status-text {
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .endpoint-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.25rem;
+            border-radius: 12px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .endpoint-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .method {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .method.post { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .method.get { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .method.put { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .method.delete { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+        .path {
+            font-family: monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.85rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">Task 2 — REST API Service</div>
+            <h1>Users, Projects & Tasks API</h1>
+            <p class="subtitle">Spring Boot 3.2 • Java 17 • PostgreSQL (Neon)</p>
+        </div>
+
+        <div class="card">
+            <div class="status-box">
+                <div class="status-indicator">
+                    <div class="dot"></div>
+                    <span class="status-text">Backend Status: Active</span>
+                </div>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">86/86 Unit Tests Passed</span>
+            </div>
+
+            <p style="color: var(--text-muted); line-height: 1.6;">
+                Welcome to the REST API portal for managing Users, Projects, and Tasks. The service features JWT Authentication, Role-based Access Control (ADMIN/USER), dynamic JPA specifications, and Flyway database migrations.
+            </p>
+
+            <div class="grid">
+                <div class="endpoint-card">
+                    <span class="method post">POST</span>
+                    <div class="path">/api/auth/login</div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.3rem;">Authenticate & obtain JWT</p>
+                </div>
+                <div class="endpoint-card">
+                    <span class="method get">GET</span>
+                    <div class="path">/api/projects</div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.3rem;">List & search user projects</p>
+                </div>
+                <div class="endpoint-card">
+                    <span class="method post">POST</span>
+                    <div class="path">/api/tasks</div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.3rem;">Create & assign project tasks</p>
+                </div>
+                <div class="endpoint-card">
+                    <span class="method get">GET</span>
+                    <div class="path">/api/dashboard</div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.3rem;">Project analytics & stats</p>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="https://github.com/Harsh23555/Users-Projects-Tasks-REST-API" target="_blank" class="btn btn-secondary">GitHub Repository</a>
+            </div>
+        </div>
+
+        <footer>
+            Built for Innovation Hacks • Spring Boot REST API
+        </footer>
+    </div>
+</body>
+</html>
