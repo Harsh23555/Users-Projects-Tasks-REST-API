@@ -1,7 +1,7 @@
 # Multi-stage Docker build for Spring Boot + PostgreSQL Application
 
 # Stage 1: Build JAR using Maven
-FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 WORKDIR /app
 
 # Copy pom.xml and cache dependencies
@@ -12,8 +12,8 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn package -DskipTests -B
 
-# Stage 2: Minimal Java 21 JRE Runtime
-FROM eclipse-temurin:21-jre-alpine
+# Stage 2: Minimal Java 17 JRE Runtime
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Non-root user for container security
